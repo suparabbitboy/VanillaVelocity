@@ -1,0 +1,418 @@
+/* =====================================================================
+   VANILLA VELOCITY – STYLESHEET
+   Website and modpack by suparabbitboy.
+
+   HOW THIS FILE IS ORGANISED (top to bottom):
+     1. Variables (colours + fonts)
+     2. Base styles (body, text, images, links, headings)
+     3. Navigation bar
+     4. Home page hero + shared buttons / layout pieces
+     5. Gallery + lightbox (screenshot viewer)
+     6. Mod Browser pieces (tabs, search, chips, result rows)
+     7. Download page pieces
+     8. FAQ / footer / mobile rules
+     9. Inner-page extras (banner, stats, steps, etc.)
+    10. Colour themes per page (these OVERRIDE earlier rules)
+
+   IMPORTANT: In CSS, when two rules match the same element, the one
+   LOWER in the file wins. That is why the colour/theme sections are at
+   the very bottom – they override the defaults set above.
+   ===================================================================== */
+
+
+/* ---------------------------------------------------------------------
+   1. VARIABLES
+   Custom properties are reusable values. Change one here and it changes
+   everywhere that uses var(--name).
+   --------------------------------------------------------------------- */
+:root{
+  --bg:#f4f4f0;      /* page background (a warm off-white) */
+  --ink:#111418;     /* main text colour (near black) */
+  --mute:#5d646d;    /* softer grey text for descriptions */
+  --line:#d9d9d2;    /* thin divider lines */
+  --acc:#2b4cff;     /* accent colour: links and highlights (blue) */
+  --hi:#d6ff3f;      /* highlight colour (lime) used on buttons/tags */
+  --dark:#111418;    /* dark section / footer background */
+  /* Fonts: the first name is used if loaded, the rest are fallbacks */
+  --head:"Familjen Grotesk","Helvetica Neue",Arial,sans-serif; /* headings */
+  --body:"Instrument Sans","Helvetica Neue",Arial,sans-serif;  /* body text */
+}
+
+
+/* ---------------------------------------------------------------------
+   2. BASE STYLES
+   --------------------------------------------------------------------- */
+/* Make padding/borders count inside an element's width (easier sizing) */
+*{box-sizing:border-box}
+/* Smooth scrolling when jumping to anchors */
+html{scroll-behavior:smooth}
+/* Whole-page defaults: colours, font, text size and line spacing */
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.65 var(--body)}
+/* Images never overflow their container; display:block removes gaps below them */
+img{max-width:100%;display:block}
+/* Links use the accent colour */
+a{color:var(--acc)}
+/* Shared heading style: tight spacing, heading font */
+h1,h2,h3{font-family:var(--head);margin:0 0 .5em;letter-spacing:-.02em;line-height:1.05}
+/* Heading sizes. clamp(min, preferred, max) scales text with screen width */
+h1{font-size:clamp(2.6rem,7vw,5.2rem);font-weight:700}
+h2{font-size:clamp(1.8rem,3.6vw,2.8rem);font-weight:700}
+h3{font-size:1.2rem;font-weight:600;letter-spacing:-.01em}
+/* Paragraphs: limited line length (easier to read) and spacing below */
+p{max-width:64ch;margin:0 0 1em}
+/* .wrap = centred content column used on every page */
+.wrap{max-width:1160px;margin:0 auto;padding:0 24px}
+/* Vertical spacing for each content section */
+section{padding:56px 0}
+/* Visible outline when navigating with the keyboard (accessibility) */
+:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
+
+
+/* ---------------------------------------------------------------------
+   3. NAVIGATION BAR (built by site.js)
+   --------------------------------------------------------------------- */
+/* Bar sticks to the top of the screen while scrolling */
+header.nav{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--ink)}
+/* Inner row: logo on the left, links on the right */
+.nav .wrap{display:flex;align-items:center;height:60px;gap:24px}
+/* Logo + site name link */
+.brand{display:flex;align-items:center;gap:10px;font:700 1.15rem var(--head);color:var(--ink);text-decoration:none}
+/* Small rounded icon next to the name */
+.brand img{width:30px;height:30px;border-radius:6px}
+/* margin-left:auto pushes the menu to the far right */
+.nav nav{margin-left:auto;display:flex;gap:22px}
+/* Menu links: no underline, with an invisible bottom border to animate */
+.nav nav a{color:var(--ink);text-decoration:none;font-weight:600;padding:4px 0;border-bottom:2px solid transparent}
+/* Hover shows a faint line */
+.nav nav a:hover{border-color:var(--line)}
+/* .on marks the page you are currently on: solid underline */
+.nav nav a.on{border-color:var(--ink)}
+
+
+/* ---------------------------------------------------------------------
+   4. HOME HERO + SHARED BUTTONS / LAYOUT PIECES
+   --------------------------------------------------------------------- */
+/* Big header image on the home page (screenshot1.png as background) */
+.hero{position:relative;color:#fff;background:#111 url(screenshot1.png) center/cover;padding:0}
+/* Dark gradient laid over the image so white text stays readable */
+.hero::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,12,16,.9) 0,rgba(10,12,16,.55) 60%,rgba(10,12,16,.2))}
+/* Hero content sits above the gradient (position:relative lifts it) */
+.hero .wrap{position:relative;padding-top:110px;padding-bottom:90px}
+/* Logo image at the top of the hero */
+.hero .logo{max-width:min(520px,100%);margin:0 0 28px}
+/* Intro sentence in the hero */
+.hero p{font-size:1.25rem;color:#e3e6ea;margin-bottom:22px}
+/* Row of version badges: "Version 1.0 / Fabric 26.2 / ..." */
+.pills{display:flex;gap:22px;margin:0 0 30px;font-weight:600;color:#fff}
+/* Each badge gets a coloured bar on its left */
+.pill{border-left:3px solid var(--hi);padding-left:10px}
+/* Main button style (lime with black outline) */
+.btn{display:inline-block;padding:14px 26px;background:var(--hi);color:#111;font-weight:700;text-decoration:none;border:2px solid #111;border-radius:4px;cursor:pointer;font:700 1rem var(--body);transition:transform .12s,box-shadow .12s}
+/* On hover the button lifts and gets a hard shadow */
+.btn:hover{transform:translate(-2px,-2px);box-shadow:4px 4px 0 #111}
+/* .alt = outlined button with transparent fill */
+.btn.alt{background:transparent;color:inherit;border-color:currentColor}
+/* White shadow for the outlined button on the dark hero */
+.hero .btn.alt:hover{box-shadow:4px 4px 0 #fff}
+/* "Made by suparabbitboy" credit: avatar + name in a row */
+.by{display:inline-flex;align-items:center;gap:10px;color:inherit;text-decoration:none;font-weight:600}
+/* Round profile picture */
+.by img{width:34px;height:34px;border-radius:50%;object-fit:cover}
+/* Underline the name on hover */
+.by:hover span{text-decoration:underline}
+/* Two-column layout (text + image). Stacks on mobile (see section 8) */
+.two{display:grid;gap:56px;grid-template-columns:1.3fr 1fr;align-items:center}
+/* Feature list on the home page: ruled rows instead of boxes */
+.rows{border-top:2px solid var(--ink)}
+/* Each row: title on the left, description on the right */
+.rows .card{display:grid;grid-template-columns:1fr 2fr;gap:24px;padding:22px 0;border-bottom:1px solid var(--line)}
+/* Remove default margins and grey the description */
+.rows .card h3{margin:0}
+.rows .card p{margin:0;color:var(--line)}
+/* Dark full-colour band ("Why Vanilla Velocity?") */
+.band{background:var(--dark);color:#fff}
+.band p{color:#c9cdd3}
+/* Make the colors yellow for Home Page */
+body[data-page="index.html"]{--hi:#1BD96A}
+
+
+/* ---------------------------------------------------------------------
+   5. GALLERY + LIGHTBOX
+   --------------------------------------------------------------------- */
+/* Screenshot grid: 4 columns */
+.gallery{display:grid;gap:12px;grid-template-columns:repeat(4,1fr)}
+/* Thumbnails: equal shape, cropped to fit, zoom cursor to hint they enlarge */
+.gallery img{width:100%;aspect-ratio:4/3;object-fit:cover;cursor:zoom-in;border-radius:4px}
+/* First screenshot is large: spans 2 columns and 2 rows */
+.gallery img:first-child{grid-column:span 2;grid-row:span 2;aspect-ratio:auto;height:100%}
+/* Lightbox = full-screen dark overlay shown when you click a screenshot (hidden by default) */
+#lb{position:fixed;inset:0;background:rgba(5,6,8,.94);display:none;align-items:center;justify-content:center;z-index:50;cursor:zoom-out;padding:20px}
+/* JavaScript adds .open to display it */
+#lb.open{display:flex}
+/* Enlarged image never exceeds the screen height */
+#lb img{max-height:92vh}
+
+
+/* ---------------------------------------------------------------------
+   6. MOD BROWSER PIECES
+   --------------------------------------------------------------------- */
+/* Tab row: Mods / Shader packs / Resource packs */
+.tabs{display:flex;gap:26px;border-bottom:2px solid var(--ink);margin:20px 0}
+/* Tabs are plain text buttons with a hidden bottom bar */
+.tabs button{background:none;border:0;border-bottom:4px solid transparent;margin-bottom:-2px;padding:10px 0;font:700 1.05rem var(--head);color:var(--mute);cursor:pointer}
+/* Selected tab: darker text and coloured bar */
+.tabs button.on{color:var(--ink);border-color:var(--acc)}
+/* Large search input with only a bottom line */
+.search{width:100%;padding:16px 4px;border:0;border-bottom:2px solid var(--ink);background:transparent;font:600 1.5rem var(--head);color:var(--ink)}
+/* Line changes colour when you click into it */
+.search:focus{outline:0;border-color:var(--acc)}
+/* Category filter buttons ("All", "Performance", ...) */
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:16px 0}
+.chips button{background:transparent;border:1px solid var(--ink);border-radius:4px;padding:5px 12px;font:600 .9rem var(--body);cursor:pointer;color:var(--ink)}
+/* Selected filter is filled in */
+.chips button.on{background:var(--ink);color:#fff}
+/* "42 of 95 shown" text */
+.count{color:var(--mute);margin-bottom:6px;font-size:.95rem}
+/* Result list container */
+#list{display:block;border-top:1px solid var(--ink)}
+/* One result row: 3 columns (category | name+description | link) */
+.item{display:grid;grid-template-columns:130px minmax(0,1fr) auto;gap:20px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
+/* Row highlights on hover */
+.item:hover{background:#ebebe5}
+.item .cat{font-size:.85rem;color:var(--mute);font-weight:600}
+.item h3{margin:0;font-size:1.1rem}
+.item p{margin:0;color:var(--mute);font-size:.95rem}
+/* "Open on Modrinth" link style (the inner-page section restyles this later) */
+.links a{font-weight:700;color:var(--ink);text-decoration:none;border-bottom:2px solid var(--hi);white-space:nowrap}
+.links a:hover{background:var(--hi)}
+
+
+/* ---------------------------------------------------------------------
+   7. DOWNLOAD PAGE – BASE (restyled further in sections 9 + 10)
+   --------------------------------------------------------------------- */
+/* Three download cards side by side inside one bordered box */
+.dl{display:grid;gap:0;grid-template-columns:repeat(3,1fr);border:2px solid var(--ink);margin:30px 0 50px}
+/* Each card is a vertical stack; border-right separates them */
+.dl .card{padding:30px 26px;border-right:2px solid var(--ink);display:flex;flex-direction:column;gap:14px}
+.dl .card:last-child{border:0}
+.dl .card p{color:var(--mute);margin:0}
+/* margin-top:auto pins the button to the bottom of the card */
+.dl .btn{text-align:center;margin-top:auto}
+.steps li{margin-bottom:8px}
+
+
+/* ---------------------------------------------------------------------
+   8. FAQ, FOOTER, MOBILE
+   --------------------------------------------------------------------- */
+/* FAQ items use the built-in <details> expand/collapse element */
+details{border-top:1px solid var(--ink);padding:14px 0}
+details:last-of-type{border-bottom:1px solid var(--ink)}
+/* The clickable question */
+summary{cursor:pointer;font:600 1.1rem var(--head)}
+/* The answer */
+details p{margin:10px 0 0;color:var(--mute)}
+/* Dark footer on every page (built by site.js) */
+footer{background:var(--dark);color:#c9cdd3;padding:40px 0;font-size:.95rem}
+footer .by{color:#fff;margin-bottom:12px}
+footer p{margin:0}
+/* Tablet/phone rules (screens up to 800px wide) */
+@media(max-width:800px){
+  /* Multi-column layouts become single column */
+  .two,.rows .card,.dl{grid-template-columns:1fr}
+  /* Download cards stack, so separate with bottom borders instead */
+  .dl .card{border-right:0;border-bottom:2px solid var(--ink)}
+  /* Result rows stack their parts */
+  .item{grid-template-columns:1fr;gap:4px}
+  /* Gallery drops to 2 columns */
+  .gallery{grid-template-columns:1fr 1fr}
+  /* Less empty space at the top of the hero */
+  .hero .wrap{padding-top:70px}
+  /* Badges wrap onto new lines */
+  .pills{flex-wrap:wrap;gap:12px}
+  .nav nav{gap:14px}
+  /* Hide the site name in the nav on small screens (icon remains) */
+  .brand span{display:none}
+}
+/* Respect users who ask their device to reduce animations */
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+
+/* ---------------------------------------------------------------------
+   9. INNER PAGES (Mod Browser, Download, About)
+   --------------------------------------------------------------------- */
+/* Page banner at the top of inner pages (uses screenshot2.png) */
+.pagehead{position:relative;color:#fff;background:#111418 url(screenshot2.png) center/cover}
+/* Dark gradient over the banner image for readability */
+.pagehead::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,12,16,.94),rgba(10,12,16,.6))}
+/* Banner content sits above the gradient */
+.pagehead .wrap{position:relative;padding-top:64px;padding-bottom:56px}
+.pagehead h1{font-size:clamp(2.4rem,6vw,4.2rem);margin-bottom:.3em}
+.pagehead p{color:#e3e6ea;font-size:1.15rem;margin:0}
+/* Small uppercase label above the page title */
+.kicker{display:inline-block;font:700 .8rem var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--hi);margin-bottom:14px}
+/* Mod Browser toolbar (tabs + search + filters) stays visible under the nav while scrolling */
+.tools{position:sticky;top:60px;z-index:10;background:var(--bg);border-bottom:1px solid var(--ink);padding-bottom:10px}
+.tools .tabs{margin:0 0 4px;border:0}
+.tools .search{font-size:1.35rem}
+.tools .chips{margin:10px 0 0}
+/* Result rows: wider category column and fixed width for the button column */
+.item{grid-template-columns:150px minmax(0,1fr) 190px;padding:16px 12px;margin:0 -12px;transition:background .12s}
+/* Category shown as a small outlined tag */
+.item .cat{justify-self:start;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;border:1px solid var(--ink);border-radius:3px;padding:2px 8px;color:var(--ink)}
+/* Link button aligned to the right of the row */
+.item .links{justify-self:end}
+.links a{border:0;padding:6px 12px;background:var(--ink);color:#fff;border-radius:4px;font-size:.9rem}
+/* Arrow after the link text */
+.links a::after{content:" \2192"}
+.links a:hover{background:var(--acc);color:#fff}
+.count{margin:16px 0 8px}
+/* About page stats strip (Mods / Shaders / Packs / Version), overlaps the banner slightly */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border:2px solid var(--ink);margin:-34px 0 0;position:relative;background:var(--bg)}
+.stats div{padding:20px 22px;border-right:2px solid var(--ink)}
+.stats div:last-child{border:0}
+/* Big number and its label */
+.stats b{display:block;font:700 2.6rem/1 var(--head)}
+.stats span{color:var(--mute);font-weight:600}
+/* Screenshot on the About page with a solid offset shadow */
+.shot{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:4px;box-shadow:10px 10px 0 var(--hi);border:2px solid var(--ink);background:#d9d9d2}
+/* Make about page use Modrinth Green*/
+body[data-page="about.html"]{--hi:#1BD96A}
+/* Square profile picture of suparabbitboy */
+.portrait{width:100%;max-width:300px;aspect-ratio:1;object-fit:cover;border-radius:4px;border:2px solid var(--ink);box-shadow:10px 10px 0 var(--hi);margin:auto}
+/* .flip swaps the order of the two columns (image on the left) */
+.flip{direction:rtl}
+.flip>*{direction:ltr}
+/* Download cards overlap the banner above them */
+.dl{grid-template-columns:repeat(3,1fr);margin:-40px 0 50px;position:relative;background:var(--bg);box-shadow:8px 8px 0 var(--ink)}
+.dl .card{padding:30px 26px;gap:10px}
+.dl .card h3{font-size:1.7rem;margin:0}
+/* File type badge (.LCPACK / .MRPACK / .ZIP) */
+.ext{font:700 .8rem var(--body);letter-spacing:.08em;background:var(--hi);color:#111;padding:3px 9px;border-radius:3px;align-self:flex-start}
+/* File name text */
+.file{font-size:.9rem;color:var(--mute);word-break:break-all}
+/* "Install in three steps" layout */
+.stepgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;margin:20px 0 40px}
+.stepgrid .n{font:700 3.2rem/1 var(--head);color:var(--acc)}
+.stepgrid h3{margin:.2em 0}
+.stepgrid p{color:var(--mute);margin:0}
+/* Requirements grid (Minecraft / Java / Memory / Graphics) */
+.reqs{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:2px solid var(--ink)}
+.reqs div{padding:18px 18px 18px 0;border-bottom:1px solid var(--line)}
+.reqs b{font:700 1.05rem var(--head);display:block}
+.reqs span{color:var(--mute);font-size:.95rem}
+/* "Made by suparabbitboy" credit box */
+.credit{display:flex;align-items:center;gap:14px;border:2px solid var(--ink);padding:16px 20px;margin-top:40px}
+.credit img{width:56px;height:56px;border-radius:50%;object-fit:cover}
+.credit p{margin:0}
+/* Mobile rules for inner pages */
+@media(max-width:800px){
+  .stats,.reqs,.stepgrid,.dl{grid-template-columns:1fr 1fr}
+  /* Steps and download cards go fully single column */
+  .stepgrid,.dl{grid-template-columns:1fr}
+  .stats div{border-bottom:2px solid var(--ink)}
+  .item{grid-template-columns:1fr}
+  .item .links{justify-self:start}
+  .tools{top:56px}
+  .flip{direction:ltr}
+}
+
+
+/* =====================================================================
+   10. COLOUR THEMES
+   These come last on purpose so they override everything above.
+   body[data-page="..."] targets one specific page, because each HTML
+   file sets <body data-page="its-own-name.html">.
+   ===================================================================== */
+/* Extra colour variable: coral */
+:root{--coral:#ff6b4a}
+
+/* ---- Mod Browser: night-blue theme (first version) ---- */
+/* Redefining variables on <body> re-colours everything that uses them */
+body[data-page="browse.html"]{--bg:#0e1124;--ink:#f4f4f0;--mute:#a9b2d0;--line:#252b4a;--acc:#8ea2ff}
+body[data-page="browse.html"] .tabs button.on{border-color:var(--hi);color:#fff}
+body[data-page="browse.html"] .chips button.on{background:var(--hi);color:#111;border-color:var(--hi)}
+body[data-page="browse.html"] .item:hover{background:#171c3a}
+body[data-page="browse.html"] .item .cat{border-color:#4a54a0;color:var(--hi)}
+body[data-page="browse.html"] .links a{background:var(--hi);color:#111}
+body[data-page="browse.html"] .links a:hover{background:#fff;color:#111}
+body[data-page="browse.html"] .search:focus{border-color:var(--hi)}
+body[data-page="browse.html"] .item h3{color:#fff}
+
+/* ---- Download page: blue theme (first version) ---- */
+body[data-page="download.html"]{--bg:#2b4cff;--ink:#fff;--mute:#dbe2ff;--line:rgba(255,255,255,.35);--acc:#fff}
+body[data-page="download.html"] .dl{background:none;box-shadow:8px 8px 0 #0a1250;border-color:#0a1250}
+body[data-page="download.html"] .dl .card{color:#111;border-color:#0a1250}
+body[data-page="download.html"] .dl .card p,body[data-page="download.html"] .dl .file{color:#222}
+body[data-page="download.html"] .dl .card:nth-child(1){background:var(--coral)}
+body[data-page="download.html"] .dl .card:nth-child(2){background:var(--hi)}
+body[data-page="download.html"] .dl .card:nth-child(3){background:#f4f4f0}
+/* Black file-type badge and black download buttons on the coloured cards */
+body[data-page="download.html"] .ext{background:#111;color:#fff}
+body[data-page="download.html"] .dl .btn{background:#111;color:#fff;border-color:#111}
+body[data-page="download.html"] .dl .btn:hover{box-shadow:4px 4px 0 rgba(0,0,0,.35)}
+body[data-page="download.html"] .stepgrid .n{color:var(--hi)}
+body[data-page="download.html"] .reqs b{color:#fff}
+body[data-page="download.html"] .credit{background:#0a1250;border-color:#0a1250}
+
+/* ---- About page: coloured full-width bands (first version) ---- */
+/* Stats strip: dark box with lime numbers */
+.stats{background:#111418;color:#fff;border-color:#111418}
+.stats div{border-color:#333a46}
+.stats b{color:var(--hi)}
+.stats span{color:#c9cdd3}
+/* clip-path + huge box-shadow trick = a background that stretches to the full screen width even though the content is narrower */
+body[data-page="about.html"] main section:nth-of-type(-n+3){clip-path:inset(0 -100vmax);}
+/* Section 1 (story): lime band */
+body[data-page="about.html"] main section:nth-of-type(1){background:var(--hi);box-shadow:0 0 0 100vmax var(--hi);color:#111;--ink:#111;--mute:#2d3138;margin-top:0}
+body[data-page="about.html"] main section:nth-of-type(1) .portrait{box-shadow:10px 10px 0 #111}
+/* Section 2 (optimization): blue band */
+body[data-page="about.html"] main section:nth-of-type(2){background:var(--acc);box-shadow:0 0 0 100vmax var(--acc);color:#fff}
+body[data-page="about.html"] main section:nth-of-type(2) .shot{box-shadow:10px 10px 0 var(--hi);border-color:#fff}
+/* Section 3 (quality of life): near-black band */
+body[data-page="about.html"] main section:nth-of-type(3){background:#111418;box-shadow:0 0 0 100vmax #111418;color:#fff}
+body[data-page="about.html"] main section:nth-of-type(3) .shot{box-shadow:10px 10px 0 var(--coral);border-color:#fff}
+body[data-page="about.html"] main section:nth-of-type(3) h2{color:var(--hi)}
+body[data-page="about.html"] main section:nth-of-type(2) p,body[data-page="about.html"] main section:nth-of-type(3) p{color:#eef0f6}
+/* Section 4 (FAQ): extra top space */
+body[data-page="about.html"] main section:nth-of-type(4){padding-top:70px}
+/* Coral arrow marker on FAQ questions */
+body[data-page="about.html"] summary::marker{color:var(--coral)}
+/* Lime kicker label on the About + Download banners */
+body[data-page="about.html"] .pagehead .kicker,body[data-page="download.html"] .pagehead .kicker{color:var(--hi)}
+
+/* ---- BLACK THEME: overrides the colour themes above on all 3 inner pages ---- */
+body[data-page="browse.html"],body[data-page="download.html"],body[data-page="about.html"]{--bg:#0a0a0b;--ink:#f4f4f0;--mute:#a8acb5;--line:#2a2c33;--acc:#7d93ff}
+body[data-page="browse.html"] .item:hover{background:#17181c}
+body[data-page="browse.html"] .item .cat{border-color:#3a3d46}
+/* Download page accent becomes lime again */
+body[data-page="download.html"]{--acc:var(--hi)}
+body[data-page="download.html"] .dl{box-shadow:8px 8px 0 #25272d;border-color:#000}
+body[data-page="download.html"] .dl .card{border-color:#000}
+body[data-page="download.html"] .credit{background:#15161a;border-color:#2a2c33}
+body[data-page="download.html"] .stepgrid .n{color:var(--coral)}
+/* About page stats strip on black */
+.stats{background:#15161a;border-color:#2a2c33}
+.stats div{border-color:#2a2c33}
+/* About sections alternate black / charcoal */
+body[data-page="about.html"] main section:nth-of-type(1){background:#0a0a0b;box-shadow:0 0 0 100vmax #0a0a0b;color:#f4f4f0;--ink:#f4f4f0;--mute:#a8acb5}
+body[data-page="about.html"] main section:nth-of-type(2){background:#15161a;box-shadow:0 0 0 100vmax #15161a}
+body[data-page="about.html"] main section:nth-of-type(3){background:#0a0a0b;box-shadow:0 0 0 100vmax #0a0a0b}
+body[data-page="about.html"] main section:nth-of-type(1) .portrait{box-shadow:10px 10px 0 var(--hi);border-color:#f4f4f0}
+/* Lime headings in the first three About sections */
+body[data-page="about.html"] main section:nth-of-type(-n+3) h2{color:var(--hi)}
+body[data-page="about.html"] main section:nth-of-type(1) p{color:#d4d7de}
+body[data-page="about.html"] main section:nth-of-type(2) .shot{border-color:#f4f4f0}
+
+/* ---- LAUNCHER BRAND COLOURS (download cards) ---- */
+/* Card 1: Lunar Client purple, white text */
+body[data-page="download.html"] .dl .card:nth-child(1){background:#BA3EE9;color:#fff}
+body[data-page="download.html"] .dl .card:nth-child(1) p,body[data-page="download.html"] .dl .card:nth-child(1) .file{color:#fff}
+/* Card 2: Modrinth green, dark text */
+body[data-page="download.html"] .dl .card:nth-child(2){background:#1BD96A;color:#0a0a0b}
+/* Card 3: CurseForge orange, dark text */
+body[data-page="download.html"] .dl .card:nth-child(3){background:#F16436;color:#0a0a0b}
+body[data-page="download.html"] .dl .card:nth-child(2) p,body[data-page="download.html"] .dl .card:nth-child(2) .file,
+body[data-page="download.html"] .dl .card:nth-child(3) p,body[data-page="download.html"] .dl .card:nth-child(3) .file{color:#0a0a0b}
+
+/* ---- Mod Browser accent: Modrinth green (changes --hi only on this page) ---- */
+body[data-page="browse.html"]{--hi:#1BD96A}

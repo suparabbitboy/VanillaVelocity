@@ -1,0 +1,39 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mod Browser – Vanilla Velocity</title><meta name="description" content="Vanilla Velocity: a performance and quality-of-life Fabric 26.2 modpack by suparabbitboy.">
+<link rel="stylesheet" href="style.css"></head><body data-page="browse.html">
+<div class="pagehead"><div class="wrap"><span class="kicker">Everything in the pack</span><h1>Mod Browser</h1>
+<p>Search every mod, shader pack and resource pack in Vanilla Velocity 1.0, with a short description and a link to each project.</p></div></div>
+<main class="wrap"><div class="tools"><div class="tabs" id="tabs" role="tablist"></div>
+<input class="search" id="q" type="search" placeholder="Search by name or what it does (press / to focus)" aria-label="Search">
+<div class="chips" id="chips"></div></div>
+<div class="count" id="count" aria-live="polite"></div><div id="list"></div><section style="padding-top:30px"><p style="color:var(--mute)">Pack curated by suparabbitboy. All projects belong to their respective authors.</p></section></main>
+<script src="data.js"></script>
+<script>
+const T={mods:{label:"Mods",path:"mod",type:"mod"},shaders:{label:"Shader packs",path:"shader",type:"shader"},packs:{label:"Resource packs",path:"resourcepack",type:"resourcepack"}};
+const items={mods:MODS.map(m=>({n:m[0],c:m[1],d:m[2],s:m[3]})),shaders:SHADERS.map(m=>({n:m[0],c:"Shader",d:m[1],s:m[2]})),packs:PACKS.map(m=>({n:m[0],c:"Resource pack",d:m[1],s:m[2]}))};
+let tab=location.hash.slice(1) in T?location.hash.slice(1):"mods",cat="All";
+const $=id=>document.getElementById(id);
+function enc(s){return encodeURIComponent(s)}
+function url(i){return i.s?`https://modrinth.com/${T[tab].path}/${i.s}`:`https://modrinth.com/discover/${T[tab].path}s?q=${enc(i.n)}`}
+// Items without a known slug: look up the best match on Modrinth's API, then go straight to its page
+$("list").addEventListener("click",async e=>{const a=e.target.closest("a[data-n]");if(!a||a.dataset.s)return;
+ e.preventDefault();const w=window.open("about:blank","_blank");
+ try{const r=await fetch(`https://api.modrinth.com/v2/search?limit=1&query=${enc(a.dataset.n)}&facets=${enc(JSON.stringify([["project_type:"+T[tab].type]]))}`);
+  const h=(await r.json()).hits[0];w.location=h?`https://modrinth.com/${T[tab].path}/${h.slug}`:a.href}catch(x){w.location=a.href}});
+function render(){
+ const q=$("q").value.trim().toLowerCase(),all=items[tab];
+ const cats=["All",...new Set(all.map(i=>i.c))];
+ $("chips").innerHTML=tab==="mods"?cats.map(c=>`<button class="${c===cat?"on":""}" data-c="${c}">${c}</button>`).join(""):"";
+ const res=all.filter(i=>(cat==="All"||i.c===cat)&&(i.n+" "+i.d+" "+i.c).toLowerCase().includes(q));
+ $("count").textContent=res.length+" of "+all.length+" shown";
+ $("list").innerHTML=res.map(i=>`<article class="card item"><span class="cat">${i.c}</span><div><h3>${i.n}</h3><p>${i.d}</p></div>
+ <div class="links"><a href="${url(i)}" data-n="${i.n}" data-s="${i.s||''}" target="_blank" rel="noopener">Open on Modrinth</a></div></article>`).join("")||"<p>No results. Try a different word or category.</p>";
+}
+$("tabs").innerHTML=Object.keys(T).map(k=>`<button data-t="${k}">${T[k].label} (${items[k].length})</button>`).join("");
+$("tabs").onclick=e=>{const k=e.target.dataset.t;if(!k)return;tab=k;cat="All";location.hash=k;tabs()};
+$("chips").onclick=e=>{if(e.target.dataset.c){cat=e.target.dataset.c;render()}};
+function tabs(){[...$("tabs").children].forEach(b=>b.classList.toggle("on",b.dataset.t===tab));render()}
+$("q").oninput=render;
+document.addEventListener("keydown",e=>{if(e.key==="/"&&document.activeElement!==$("q")){e.preventDefault();$("q").focus()}});
+tabs();
+</script><script src="site.js"></script></body></html>
